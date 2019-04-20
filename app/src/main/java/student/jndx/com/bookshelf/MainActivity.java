@@ -1,8 +1,11 @@
 package student.jndx.com.bookshelf;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,9 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AutoCompleteTextView;
+
+import java.lang.reflect.Field;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private SearchView mSearchView;
+    private AutoCompleteTextView mAutoCompleteTextView;//搜索输入框
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +48,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        initView();
+        initData();
+        setListener();
     }
 
     @Override
@@ -98,4 +110,66 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void initView(){
+
+        mSearchView=findViewById(R.id.searchView);
+        mAutoCompleteTextView=mSearchView.findViewById(R.id.search_src_text);
+    }
+
+    private void initData(){
+        mSearchView.setIconifiedByDefault(false);//设置搜索图标是否显示在搜索框内
+        //1:回车
+        //2:前往
+        //3:搜索
+        //4:发送
+        //5:下一項
+        //6:完成
+        mSearchView.setImeOptions(2);//设置输入法搜索选项字段，默认是搜索，可以是：下一页、发送、完成等
+//        mSearchView.setInputType(1);//设置输入类型
+//        mSearchView.setMaxWidth(200);//设置最大宽度
+        mSearchView.setQueryHint("搜索书本");//设置查询提示字符串
+//        mSearchView.setSubmitButtonEnabled(true);//设置是否显示搜索框展开时的提交按钮
+        //设置SearchView下划线透明
+        setUnderLinetransparent(mSearchView);
+    }
+
+    private void setListener(){
+
+        // 设置搜索文本监听
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            //当点击搜索按钮时触发该方法
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("Main","=====query="+query);
+                return false;
+            }
+
+            //当搜索内容改变时触发该方法
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("Main","=====newText="+newText);
+                return false;
+            }
+        });
+    }
+
+    /**设置SearchView下划线透明**/
+    private void setUnderLinetransparent(SearchView searchView){
+        try {
+            Class<?> argClass = searchView.getClass();
+            // mSearchPlate是SearchView父布局的名字
+            Field ownField = argClass.getDeclaredField("mSearchPlate");
+            ownField.setAccessible(true);
+            View mView = (View) ownField.get(searchView);
+            mView.setBackgroundColor(Color.TRANSPARENT);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
