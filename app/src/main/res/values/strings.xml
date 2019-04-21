@@ -7,4 +7,8 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="choose_bookshelf">所有</string>
+    <string name="book_image_txt">书籍图片</string>
+    <string name="book_title">此处放书籍名字</string>
+    <string name="book_detail">此处放书籍详情</string>
+    <string name="book_date">2019-4</string>
 </resources>

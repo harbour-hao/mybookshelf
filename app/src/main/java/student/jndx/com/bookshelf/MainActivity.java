@@ -16,14 +16,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
+import android.widget.ListView;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private SearchView mSearchView;
     private AutoCompleteTextView mAutoCompleteTextView;//搜索输入框
-
+    private ListAdapter adapter;//存储Book数据的数组的适配器
+    private ArrayList<Book> books=new ArrayList<>();
+    private ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,10 +52,17 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        //搜索框初始化
         initView();
         initData();
         setListener();
+        //listview,只需更新ArrayList的数据即可
+        Book book=new Book();
+        book.setTitle("深入了解jvm");
+        this.books.add(book);
+        adapter = new ListAdapter( this.books,MainActivity.this);
+        listView =(ListView)this.findViewById(R.id.MyListView);
+        listView.setAdapter(adapter);
     }
 
     @Override
