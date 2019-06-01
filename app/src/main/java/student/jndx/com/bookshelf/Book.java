@@ -6,14 +6,24 @@ public class Book implements Serializable {
     private int imageurl=R.mipmap.book_img_default;
     private String title="标题";
     private String writer="writer";
-    private String parter="parter";
+    private String partner="parter";
     private String publisher="publisher";
     private String date="2019-4";
     private String code="611626";
-    private int readstatus=0;
+    private String readstatus="未读";
     private String bookshelf="bookshelf";
     private String tag="标签";
+    private String note="书籍笔记";
     private String url="www.baidu.com";
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
 
     public int getImageurl() {
         return imageurl;
@@ -40,11 +50,11 @@ public class Book implements Serializable {
     }
 
     public String getParter() {
-        return parter;
+        return partner;
     }
 
     public void setParter(String parter) {
-        this.parter = parter;
+        this.partner = parter;
     }
 
     public String getPublisher() {
@@ -71,11 +81,11 @@ public class Book implements Serializable {
         this.code = code;
     }
 
-    public int getReadstatus() {
+    public String getReadstatus() {
         return readstatus;
     }
 
-    public void setReadstatus(int readstatus) {
+    public void setReadstatus(String readstatus) {
         this.readstatus = readstatus;
     }
 

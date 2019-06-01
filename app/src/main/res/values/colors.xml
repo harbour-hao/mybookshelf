@@ -5,4 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="font_color">#080808</color>
     <color name="date_color">#878787</color>
+    <color name="white">#EEEEEE</color>
+    <color name="background_blue">#1874CD</color>
+    <color name="icontred">	#CD0000</color>
 </resources>

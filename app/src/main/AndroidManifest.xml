@@ -19,6 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Book_detail" />
+        <activity android:name=".EditBook"></activity>
     </application>
 
 </manifest>

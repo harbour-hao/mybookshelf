@@ -1,9 +1,12 @@
 package student.jndx.com.bookshelf;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -15,26 +18,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private SearchView mSearchView;
     private AutoCompleteTextView mAutoCompleteTextView;//搜索输入框
     private ListAdapter adapter;//存储Book数据的数组的适配器
-    private ArrayList<Book> books=new ArrayList<>();
+    private ArrayList<Book> books=new ArrayList<Book>();
     private ListView listView;
+    private ArrayList<Book> allbooks;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,10 +66,29 @@ public class MainActivity extends AppCompatActivity
         //listview,只需更新ArrayList的数据即可
         Book book=new Book();
         book.setTitle("深入了解jvm");
+        book.setDate("2011-01");
+        book.setWriter("周志明");
+        book.setPublisher("中华出版社");
         this.books.add(book);
+         book=new Book();
+        book.setTitle("Effective Java");
+        book.setDate("2010-03");
+        book.setPublisher("美国出版社");
+        book.setWriter("joshua bloch");
+        this.books.add(book);
+         book=new Book();
+        book.setTitle("this world");
+        book.setDate("2015-09");
+        book.setWriter("小明");
+        book.setPublisher("广东出版社");
+        this.books.add(book);
+        this.allbooks=new ArrayList<>(this.books);//记得保存原数据
+        Log.d("Main","activty"+String.valueOf(allbooks.size()));
         adapter = new ListAdapter( this.books,MainActivity.this);
         listView =(ListView)this.findViewById(R.id.MyListView);
         listView.setAdapter(adapter);
+        //listview的点击事件
+        listView.setOnItemClickListener(new mItemClick());
     }
 
     @Override
@@ -75,13 +101,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //菜单无反应，不显示
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
+    //设置菜单，选择排序的位置
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -90,7 +117,54 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_main_sort) {
+            Log.d("Main","sort");
+            final String []SortWay={"标题","作者","出版社","出版时间"};
+            AlertDialog.Builder sortdialog=new AlertDialog.Builder(MainActivity.this).setTitle("选择排序方式");
+            sortdialog.setSingleChoiceItems(SortWay, 1, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d("Main",SortWay[which]);
+                            dialog.dismiss();
+                            switch (SortWay[which]){
+                                case "标题":
+                                    Collections.sort(books, new Comparator<Book>() {
+                                        @Override
+                                        public int compare(Book b1, Book b2) {
+                                            return b1.getTitle().compareTo(b2.getTitle());
+                                        }
+                                    });
+                                    break;
+                                case "作者":
+                                    Collections.sort(books, new Comparator<Book>() {
+                                        @Override
+                                        public int compare(Book b1, Book b2) {
+                                            return b1.getWriter().compareTo(b2.getWriter());
+                                        }
+                                    });
+                                    break;
+                                case "出版社":
+                                    Collections.sort(books, new Comparator<Book>() {
+                                        @Override
+                                        public int compare(Book b1, Book b2) {
+                                            return b1.getPublisher().compareTo(b2.getPublisher());
+                                        }
+                                    });
+                                    break;
+                                case "出版时间":
+                                    Collections.sort(books, new Comparator<Book>() {
+                                        @Override
+                                        public int compare(Book b1, Book b2) {
+                                            return b1.getDate().compareTo(b2.getDate());
+                                        }
+                                    });
+                                    break;
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+            sortdialog.setCancelable(false);
+            sortdialog.show();
             return true;
         }
 
@@ -103,17 +177,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_book) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_search) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_tag) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_book) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_setting) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_about) {
 
         }
 
@@ -153,6 +227,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d("Main","=====query="+query);
+                books.clear();
+                for(Book tmp:allbooks){
+                    if(tmp.getTitle().contains(query)){
+                        books.add(tmp);
+                    }
+                }
+                Log.d("Main",String.valueOf(allbooks.size()));
+                adapter.notifyDataSetChanged();
                 return false;
             }
 
@@ -160,6 +242,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.d("Main","=====newText="+newText);
+                if(newText.isEmpty()){
+                    books.clear();
+                    books.addAll(allbooks);
+                    adapter.notifyDataSetChanged();
+                }
                 return false;
             }
         });
@@ -180,4 +267,28 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+    class mItemClick implements AdapterView.OnItemClickListener
+    {
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Book selectcontent = books.get(i);//获取选中的数据
+            Intent intent = new Intent(MainActivity.this, Book_detail.class);
+            Bundle bundle = new Bundle();
+            bundle.putInt("img", selectcontent.getImageurl());
+            bundle.putString("title", selectcontent.getTitle());
+            bundle.putString("writer", selectcontent.getWriter());
+            bundle.putString("partner", selectcontent.getParter());
+            bundle.putString("publisher",selectcontent.getPublisher());
+            bundle.putString("bookshelf",selectcontent.getBookshelf());
+            bundle.putString("date",selectcontent.getDate());
+            bundle.putString("code",selectcontent.getCode());
+            bundle.putString("readstatus",selectcontent.getReadstatus());
+            bundle.putString("note",selectcontent.getNote());
+            bundle.putString("url",selectcontent.getUrl());
+            bundle.putString("tag",selectcontent.getTag());
+            intent.putExtras(bundle);
+            startActivityForResult(intent, 1);
+            Log.d("Main","click");
+        }
+    }
+
 }

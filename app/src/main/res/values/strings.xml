@@ -10,5 +10,26 @@
     <string name="book_image_txt">书籍图片</string>
     <string name="book_title">此处放书籍名字</string>
     <string name="book_detail">此处放书籍详情</string>
-    <string name="book_date">2019-4</string>
+    <string name="book_writer">此处放书籍作者</string>
+    <string name="book_code">此处放书籍编码</string>
+    <string name="book_publisher">此处放书籍出版社</string>
+    <string name="book_partner">此处放书籍译者</string>
+    <string name="book_date">2019-04</string>
+    <string name="book_note">此处添加笔记</string>
+    <string name="book_tag">此处添加标签</string>
+    <string name="book_bookshelf">此处添加书架</string>
+    <string name="book_url">https://book.douban.com/</string>
+    <string name="menu_main_delete_bookshelf">删除书架</string>
+    <string name="menu_main_delete_label">删除标签</string>
+    <string name="menu_main_rename_bookshelf">重命名书架</string>
+    <string name="menu_main_rename_label">重命名标签</string>
+    <string name="menu_main_search">搜索</string>
+    <string name="menu_multi_select_item_add_label">添加标签</string>
+    <string name="menu_main_sort">排序</string>
+    <string name="menu_multi_select_item_delete">删除</string>
+    <string name="book_info_source">信息(来源:DouBan.com)</string>
+    <string name="edit_book_headertitle">编辑书籍详情</string>
+    <string name="edit_book_headerreturn">x</string>
+    <string name="edit_book_save">保存</string>
+
 </resources>

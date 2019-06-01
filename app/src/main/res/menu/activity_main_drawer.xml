@@ -5,33 +5,33 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/nav_book"
+            android:icon="@mipmap/bookshelf"
+            android:title="书籍" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_search"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
-    </group>
+            android:title="搜索" />
 
-    <item android:title="Communicate">
+    </group>
+    <item android:title="标签">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_tag"
+                android:icon="@mipmap/add"
+                android:title="添加标签" />
+        </menu>
+    </item>
+    <item android:title="标签">
+       <menu>
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_setting"
+                android:icon="@mipmap/setting"
+                android:title="设置" />
+            <item
+                android:id="@+id/nav_about"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="关于" />
         </menu>
     </item>
 

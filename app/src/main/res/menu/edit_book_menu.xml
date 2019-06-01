@@ -2,10 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_main_sort"
-        android:icon="@mipmap/ic_sort"
-        android:title="@string/menu_main_sort"
+        android:id="@+id/menu_save"
+        android:title="@string/edit_book_save"
+        android:enabled="true"
         app:showAsAction="always" />
-<!--always表示总是显示在页面上，替换那三个点-->
-
 </menu>
