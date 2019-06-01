@@ -33,9 +33,11 @@ public class MainActivity extends AppCompatActivity
     private SearchView mSearchView;
     private AutoCompleteTextView mAutoCompleteTextView;//搜索输入框
     private ListAdapter adapter;//存储Book数据的数组的适配器
-    private ArrayList<Book> books=new ArrayList<Book>();
+    private ArrayList<Book> books;
     private ListView listView;
     private ArrayList<Book> allbooks;
+    private ListOperator operator=new ListOperator();
+    private int chooseitem=0;//选中第几个item
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,24 +66,7 @@ public class MainActivity extends AppCompatActivity
         initData();
         setListener();
         //listview,只需更新ArrayList的数据即可
-        Book book=new Book();
-        book.setTitle("深入了解jvm");
-        book.setDate("2011-01");
-        book.setWriter("周志明");
-        book.setPublisher("中华出版社");
-        this.books.add(book);
-         book=new Book();
-        book.setTitle("Effective Java");
-        book.setDate("2010-03");
-        book.setPublisher("美国出版社");
-        book.setWriter("joshua bloch");
-        this.books.add(book);
-         book=new Book();
-        book.setTitle("this world");
-        book.setDate("2015-09");
-        book.setWriter("小明");
-        book.setPublisher("广东出版社");
-        this.books.add(book);
+
         this.allbooks=new ArrayList<>(this.books);//记得保存原数据
         Log.d("Main","activty"+String.valueOf(allbooks.size()));
         adapter = new ListAdapter( this.books,MainActivity.this);
@@ -203,6 +188,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initData(){
+        this.books=operator.load(getBaseContext());
+        if(books==null){//样例数据
+            this.books=new ArrayList<Book>();
+            Book book=new Book();
+            book.setTitle("深入了解jvm");
+            book.setDate("2011-01");
+            book.setWriter("周志明");
+            book.setPublisher("中华出版社");
+            this.books.add(book);
+            book=new Book();
+            book.setTitle("Effective Java");
+            book.setDate("2010-03");
+            book.setPublisher("美国出版社");
+            book.setWriter("joshua bloch");
+            this.books.add(book);
+            book=new Book();
+            book.setTitle("this world");
+            book.setDate("2015-09");
+            book.setWriter("小明");
+            book.setPublisher("广东出版社");
+            this.books.add(book);
+        }
         mSearchView.setIconifiedByDefault(false);//设置搜索图标是否显示在搜索框内
         //1:回车
         //2:前往
@@ -270,6 +277,7 @@ public class MainActivity extends AppCompatActivity
     class mItemClick implements AdapterView.OnItemClickListener
     {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            chooseitem=i;
             Book selectcontent = books.get(i);//获取选中的数据
             Intent intent = new Intent(MainActivity.this, Book_detail.class);
             Bundle bundle = new Bundle();
@@ -288,6 +296,31 @@ public class MainActivity extends AppCompatActivity
             intent.putExtras(bundle);
             startActivityForResult(intent, 1);
             Log.d("Main","click");
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 1:
+                if (resultCode == RESULT_OK) {
+                    Bundle bundle;
+                    bundle = data.getExtras();
+                    Book changeitem=books.get(chooseitem);
+                    changeitem.setTitle(bundle.getString("title"));
+                    changeitem.setWriter(bundle.getString("writer"));
+                    changeitem.setParter(bundle.getString("partner"));
+                    changeitem.setPublisher(bundle.getString("publisher"));
+                    changeitem.setDate(bundle.getString("date"));
+                    changeitem.setCode(bundle.getString("code"));
+                    changeitem.setReadstatus(bundle.getString("readstatus"));
+                    changeitem.setBookshelf(bundle.getString("bookshelf"));
+                    changeitem.setTag(bundle.getString("tag"));
+                    changeitem.setNote(bundle.getString("note"));
+                    changeitem.setUrl(bundle.getString("url"));
+                    books.set(chooseitem,changeitem);
+                    operator.save(getBaseContext(),books);
+                    break;
+                }
         }
     }
 

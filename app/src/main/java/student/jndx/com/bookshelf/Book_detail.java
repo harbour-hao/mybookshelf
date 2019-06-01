@@ -92,4 +92,12 @@ public class Book_detail extends AppCompatActivity {
                 }
         }
     }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        Bundle bundle = nowbunble;
+        intent.putExtras(bundle);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }
