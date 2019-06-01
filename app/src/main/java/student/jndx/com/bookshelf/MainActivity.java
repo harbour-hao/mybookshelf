@@ -318,6 +318,7 @@ public class MainActivity extends AppCompatActivity
                     changeitem.setNote(bundle.getString("note"));
                     changeitem.setUrl(bundle.getString("url"));
                     books.set(chooseitem,changeitem);
+                    adapter.notifyDataSetChanged();
                     operator.save(getBaseContext(),books);
                     break;
                 }
