@@ -189,7 +189,8 @@ public class MainActivity extends AppCompatActivity
 
     private void initData(){
         this.books=operator.load(getBaseContext());
-        if(books==null){//样例数据
+        //样例数据初始化
+        if(books==null){
             this.books=new ArrayList<Book>();
             Book book=new Book();
             book.setTitle("深入了解jvm");
