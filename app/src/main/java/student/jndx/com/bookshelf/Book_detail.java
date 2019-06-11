@@ -1,7 +1,6 @@
 package student.jndx.com.bookshelf;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -56,9 +55,7 @@ public class Book_detail extends AppCompatActivity {
         url=(TextView)findViewById(R.id.book_detail_url);
     }
     private void InitData(Bundle bundle){
-        Bitmap bitmap = Parsebook.ImageManager.GetLocalBitmap(Book_detail.this,bundle.getString("img"));
-        if(bitmap!=null)
-        img.setImageBitmap(bitmap);
+        img.setImageResource(bundle.getInt("img"));
         title.setText(bundle.getString("title"));
         writer.setText(bundle.getString("writer"));
         partner.setText(bundle.getString("partner"));

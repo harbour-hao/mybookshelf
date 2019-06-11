@@ -171,13 +171,14 @@
                         android:layout_marginLeft="16dp"
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
+                        android:focusable="false"
                         android:hint="@string/book_tag"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_toEndOf="@id/book_edit_label_image_view"
                         android:layout_toRightOf="@id/book_edit_label_image_view"
-                        android:focusable="false" />
+                        />
 
                 </RelativeLayout>
 

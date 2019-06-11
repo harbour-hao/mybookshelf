@@ -6,6 +6,15 @@
         android:icon="@mipmap/ic_sort"
         android:title="@string/menu_main_sort"
         app:showAsAction="always" />
-<!--always表示总是显示在页面上，替换那三个点-->
-
+    <!--always表示总是显示在页面上，替换那三个点-->
+    <item
+        android:id="@+id/menu_rename"
+        android:icon="@mipmap/more"
+        android:title="重命名标签"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@mipmap/more"
+        android:title="删除标签"
+        app:showAsAction="never" />
 </menu>

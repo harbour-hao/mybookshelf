@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+
         <item
             android:id="@+id/nav_book"
             android:icon="@mipmap/bookshelf"
@@ -13,17 +13,15 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="搜索" />
 
-    </group>
+        <item
+            android:id="@+id/nav_tag"
+            android:icon="@mipmap/add"
+            android:title="添加标签" />
+
+
+
     <item android:title="标签">
         <menu>
-            <item
-                android:id="@+id/nav_tag"
-                android:icon="@mipmap/add"
-                android:title="添加标签" />
-        </menu>
-    </item>
-    <item android:title="标签">
-       <menu>
             <item
                 android:id="@+id/nav_setting"
                 android:icon="@mipmap/setting"

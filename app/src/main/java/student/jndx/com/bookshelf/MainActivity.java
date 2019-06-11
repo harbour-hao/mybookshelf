@@ -5,40 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
-
-import com.yzq.zxinglibrary.android.CaptureActivity;
-import com.yzq.zxinglibrary.common.Constant;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-import static student.jndx.com.bookshelf.Singleadd.parseJson;
-
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
@@ -54,108 +20,48 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    static int REQUEST_CODE_SCAN=10;
-    CharSequence[] items={"扫描条形码","手动输入isbn码"};
     private SearchView mSearchView;
     private AutoCompleteTextView mAutoCompleteTextView;//搜索输入框
     private ListAdapter adapter;//存储Book数据的数组的适配器
     private ArrayList<Book> books;
     private ListView listView;
-    //private ImageView imageView;
     private ArrayList<Book> allbooks;
-    private ListOperator operator=new ListOperator();
-    private int chooseitem=0;//选中第几个item
+    private ListOperator operator = new ListOperator();
+    private int chooseitem = 0;//选中第几个item
+    private List<String> tags = null;//记录标签
+    private NavigationView navigationView = null;
+    private Menu menu, submenu = null;
+    private MenuItem sort_itme, rename_item, delete_item;
+    private FloatingActionButton fab;
+    private String current_tag = null;
+    private int current_tag_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder dialog=new AlertDialog.Builder(MainActivity.this);
-                dialog.setTitle("选择获取ISBN方式");
-                dialog.setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                //扫描isbn
-                                Intent intent0=new Intent(MainActivity.this, CaptureActivity.class);
-                                startActivityForResult(intent0,REQUEST_CODE_SCAN);
-                                break;
-                            case 1:
-                                //手动输入isbn
-                                final EditText text_ISBN=new EditText(MainActivity.this);
-                                text_ISBN.setHint("13位isbn码...");
-                                final AlertDialog.Builder dialog_inputISBN=new AlertDialog.Builder(MainActivity.this);
-                                dialog_inputISBN.setTitle("请输入ISBN码：");
-                                dialog_inputISBN.setView(text_ISBN);
-                                dialog_inputISBN.setCancelable(false);
-                                dialog_inputISBN.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        final String txt_isbn=text_ISBN.getText().toString().trim();
-                                        //正则匹配，判断是否为13位数字的isbn码
-                                        boolean isISBN= Pattern.matches("\\d{13}",txt_isbn);
-                                        if(isISBN){
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    String json_return=null;
-                                                    try {
-                                                        //根据isbn码返回json数据
-                                                        json_return=Singleadd.getResult(txt_isbn);
-
-                                                        //解析json数据，得到Book对象
-                                                        Book book=Singleadd.parseJson(MainActivity.this,json_return,txt_isbn);
-                                                        books.add(book);
-                                                        //adapter.notifyDataSetChanged();
-                                                        operator.save(MainActivity.this,books);
-                                                        books=operator.load(MainActivity.this);
-
-                                                    } catch (NoSuchAlgorithmException e) {
-                                                        e.printStackTrace();
-                                                    } catch (UnsupportedEncodingException e) {
-                                                        e.printStackTrace();
-                                                    } catch (InvalidKeyException e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                    Log.d("hhh", json_return);
-                                                }
-                                            }
-                                            ).start();
-
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                        else{
-                                            Toast.makeText(MainActivity.this,"请输入正确的isbn码",Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-                                dialog_inputISBN.show();
-
-
-                                break;}
-                    }
-
-                });
-                dialog.show();
-                // fab.close(true);
-
-
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
@@ -165,7 +71,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //搜索框初始化
         initView();
@@ -173,16 +79,14 @@ public class MainActivity extends AppCompatActivity
         setListener();
         //listview,只需更新ArrayList的数据即可
 
-        this.allbooks=new ArrayList<>(this.books);//记得保存原数据
-        Log.d("Main","activty"+String.valueOf(allbooks.size()));
-        adapter = new ListAdapter( this.books,MainActivity.this);
-        listView =(ListView)this.findViewById(R.id.MyListView);
+        this.allbooks = new ArrayList<>(this.books);//记得保存原数据
+        Log.d("Main", "activty" + String.valueOf(allbooks.size()));
+        adapter = new ListAdapter(this.books, MainActivity.this);
+        listView = (ListView) this.findViewById(R.id.MyListView);
         listView.setAdapter(adapter);
         //listview的点击事件
         listView.setOnItemClickListener(new mItemClick());
     }
-
-
 
     @Override
     public void onBackPressed() {
@@ -199,8 +103,15 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        sort_itme = menu.getItem(0);
+        rename_item = menu.getItem(1);
+        delete_item = menu.getItem(2);
+        sort_itme.setVisible(true);
+        rename_item.setVisible(false);
+        delete_item.setVisible(false);
         return true;
     }
+
     //设置菜单，选择排序的位置
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -211,15 +122,15 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_main_sort) {
-            Log.d("Main","sort");
-            final String []SortWay={"标题","作者","出版社","出版时间"};
-            AlertDialog.Builder sortdialog=new AlertDialog.Builder(MainActivity.this).setTitle("选择排序方式");
+            Log.d("Main", "sort");
+            final String[] SortWay = {"标题", "作者", "出版社", "出版时间"};
+            AlertDialog.Builder sortdialog = new AlertDialog.Builder(MainActivity.this).setTitle("选择排序方式");
             sortdialog.setSingleChoiceItems(SortWay, 1, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Log.d("Main",SortWay[which]);
+                    Log.d("Main", SortWay[which]);
                     dialog.dismiss();
-                    switch (SortWay[which]){
+                    switch (SortWay[which]) {
                         case "标题":
                             Collections.sort(books, new Comparator<Book>() {
                                 @Override
@@ -259,6 +170,82 @@ public class MainActivity extends AppCompatActivity
             sortdialog.setCancelable(false);
             sortdialog.show();
             return true;
+        } else if (id == R.id.menu_delete) {
+            LocalDataUtils.delete_tag(current_tag);
+            submenu.clear();
+            submenu = menu.addSubMenu("我的标签");
+            tags = LocalDataUtils.read_all_tag();
+            if (tags != null && tags.size() > 0) {
+                for (int i = 0; i < tags.size(); i++) {
+                    submenu.add(tags.get(i));
+                    submenu.getItem(i).setIcon(R.mipmap.book_tag);
+                }
+
+                navigationView.invalidate();
+            }
+
+            fab.setVisibility(View.VISIBLE);
+            mSearchView.setVisibility(View.VISIBLE);
+            sort_itme.setVisible(true);
+            delete_item.setVisible(false);
+            rename_item.setVisible(false);
+            adapter = new ListAdapter(books, MainActivity.this);
+            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
+        } else if (id == R.id.menu_rename) {
+            final EditText editText = new EditText(MainActivity.this);
+            final AlertDialog.Builder builder =
+                    new AlertDialog.Builder(MainActivity.this);
+            builder.setCancelable(false);
+            builder.setTitle("请输入标签的新名称").setView(editText);
+            builder.setPositiveButton("确定",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //建立标签
+                            int index = tags.indexOf(current_tag);
+                            String tag = editText.getText().toString().trim();
+                            if("".equals(tag))
+                            {
+                                Toast.makeText(MainActivity.this, "标签名称不能为空", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            if (current_tag.equals(tag)) {
+                                Toast.makeText(MainActivity.this, "请取个不一样的名字！", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            if (LocalDataUtils.rename_tag(current_tag, tag)) {
+                                Toast.makeText(MainActivity.this, "修改标签成功", Toast.LENGTH_LONG).show();
+                                tags = LocalDataUtils.read_all_tag();//读取所有标签
+                                if (menu == null) {
+                                    menu = navigationView.getMenu();
+                                    submenu = menu.addSubMenu("我的标签");
+                                }
+                                submenu.getItem(index).setTitle(tag);
+                                ArrayList<Book> new_books = new ArrayList<>();
+                                for (Book book : books) {
+                                    String book_tag = book.getTag();
+                                    if (book_tag != null && book.getTag().equals(tag)) {
+                                        new_books.add(book);
+                                    }
+
+                                }
+                                adapter = new ListAdapter(new_books, MainActivity.this);
+                                listView.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                            } else
+                                Toast.makeText(MainActivity.this, "添加标签失败，标签已存在或者含有非法字符", Toast.LENGTH_LONG).show();
+                        }
+                    });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -275,17 +262,75 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_search) {
 
         } else if (id == R.id.nav_tag) {
+            final EditText editText = new EditText(MainActivity.this);
+            final AlertDialog.Builder builder =
+                    new AlertDialog.Builder(MainActivity.this);
+            builder.setCancelable(false);
+            builder.setTitle("请输入你要新建的标签名称").setView(editText);
+            builder.setPositiveButton("确定",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //建立标签
+                            String tag = editText.getText().toString().trim();
+                            if("".equals(tag))
+                            {
+                                Toast.makeText(MainActivity.this, "标签名称不能为空", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            if (LocalDataUtils.insert_tag(tag)) {
+                                Toast.makeText(MainActivity.this, "添加标签成功", Toast.LENGTH_LONG).show();
+                                tags = LocalDataUtils.read_all_tag();//读取所有标签
+                                if (menu == null) {
+                                    menu = navigationView.getMenu();
+                                    submenu = menu.addSubMenu("我的标签");
+                                }
+                                submenu.add(tags.get(tags.size() - 1));
+                                submenu.getItem(tags.size() - 1).setIcon(R.mipmap.book_tag);
+
+                            } else
+                                Toast.makeText(MainActivity.this, "添加标签失败，标签已存在或者含有非法字符", Toast.LENGTH_LONG).show();
+                        }
+                    });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
 
         } else if (id == R.id.nav_book) {
 
         } else if (id == R.id.nav_setting) {
-            Intent intent=new Intent();
-            intent.setClass(MainActivity.this,Setting_combine.class);
-            startActivity(intent);
+
         } else if (id == R.id.nav_about) {
-            Intent intent=new Intent();
-            intent.setClass(MainActivity.this,Guanyu_activity.class);
-            startActivity(intent);
+
+        } else {
+            //执行标签动作*******************
+
+
+            String tag = (String) item.getTitle();
+            current_tag = tag;
+            current_tag_id = item.getItemId();
+            fab.setVisibility(View.GONE);
+            mSearchView.setVisibility(View.GONE);
+            sort_itme.setVisible(false);
+            rename_item.setVisible(true);
+            delete_item.setVisible(true);
+            ArrayList<Book> new_books = new ArrayList<>();
+            for (Book book : books) {
+                String book_tag = book.getTag();
+                if (book_tag != null && book.getTag().equals(tag)) {
+                    new_books.add(book);
+                }
+
+            }
+            adapter = new ListAdapter(new_books, MainActivity.this);
+            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -293,35 +338,36 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void initView(){
+    private void initView() {
 
-        mSearchView=findViewById(R.id.searchView);
-        mAutoCompleteTextView=mSearchView.findViewById(R.id.search_src_text);
+        mSearchView = findViewById(R.id.searchView);
+        mAutoCompleteTextView = mSearchView.findViewById(R.id.search_src_text);
     }
 
-    private void initData(){
-        this.books=operator.load(getBaseContext());
-        if(books==null){//样例数据
-            //imageView=findViewById(R.id.list_book_image);
-            this.books=new ArrayList<Book>();
-            Book book=new Book();
+    private void initData() {
+        this.books = operator.load(getBaseContext());
+        if (books == null) {//样例数据
+            this.books = new ArrayList<Book>();
+            Book book = new Book();
             book.setTitle("深入了解jvm");
             book.setDate("2011-01");
             book.setWriter("周志明");
             book.setPublisher("中华出版社");
-           // imageView.setImageResource(R.mipmap.book_img_default);
+            book.setTag("想看");
             this.books.add(book);
-            book=new Book();
+            book = new Book();
             book.setTitle("Effective Java");
             book.setDate("2010-03");
             book.setPublisher("美国出版社");
             book.setWriter("joshua bloch");
+            book.setTag("很想看");
             this.books.add(book);
-            book=new Book();
+            book = new Book();
             book.setTitle("this world");
             book.setDate("2015-09");
             book.setWriter("小明");
             book.setPublisher("广东出版社");
+            book.setTag("不想看");
             this.books.add(book);
         }
         mSearchView.setIconifiedByDefault(false);//设置搜索图标是否显示在搜索框内
@@ -338,23 +384,47 @@ public class MainActivity extends AppCompatActivity
 //        mSearchView.setSubmitButtonEnabled(true);//设置是否显示搜索框展开时的提交按钮
         //设置SearchView下划线透明
         setUnderLinetransparent(mSearchView);
+        LocalDataUtils.init_local_storage(MainActivity.this);
+        init_menu();
     }
 
-    private void setListener(){
+    /**
+     * 初始化标签
+     */
+    private void init_menu() {
+        tags = LocalDataUtils.read_all_tag();//读取所有标签
+        if (tags != null) {
+            if (menu == null && tags.size() > 0) {
+                menu = navigationView.getMenu();
+                submenu = menu.addSubMenu("我的标签");
+            }
+            for (int i = 0; i < tags.size(); i++) {
+                submenu.add(tags.get(i));
+                submenu.getItem(i).setIcon(R.mipmap.book_tag);
+
+            }
+
+            navigationView.invalidate();
+
+        }
+    }
+
+
+    private void setListener() {
 
         // 设置搜索文本监听
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             //当点击搜索按钮时触发该方法
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("Main","=====query="+query);
+                Log.d("Main", "=====query=" + query);
                 books.clear();
-                for(Book tmp:allbooks){
-                    if(tmp.getTitle().contains(query)){
+                for (Book tmp : allbooks) {
+                    if (tmp.getTitle().contains(query)) {
                         books.add(tmp);
                     }
                 }
-                Log.d("Main",String.valueOf(allbooks.size()));
+                Log.d("Main", String.valueOf(allbooks.size()));
                 adapter.notifyDataSetChanged();
                 return false;
             }
@@ -362,8 +432,8 @@ public class MainActivity extends AppCompatActivity
             //当搜索内容改变时触发该方法
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.d("Main","=====newText="+newText);
-                if(newText.isEmpty()){
+                Log.d("Main", "=====newText=" + newText);
+                if (newText.isEmpty()) {
                     books.clear();
                     books.addAll(allbooks);
                     adapter.notifyDataSetChanged();
@@ -373,8 +443,10 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    /**设置SearchView下划线透明**/
-    private void setUnderLinetransparent(SearchView searchView){
+    /**
+     * 设置SearchView下划线透明
+     **/
+    private void setUnderLinetransparent(SearchView searchView) {
         try {
             Class<?> argClass = searchView.getClass();
             // mSearchPlate是SearchView父布局的名字
@@ -388,28 +460,28 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-    class mItemClick implements AdapterView.OnItemClickListener
-    {
+
+    class mItemClick implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            chooseitem=i;
+            chooseitem = i;
             Book selectcontent = books.get(i);//获取选中的数据
             Intent intent = new Intent(MainActivity.this, Book_detail.class);
             Bundle bundle = new Bundle();
-            bundle.putString("img", selectcontent.getUuid());
+            bundle.putInt("img", selectcontent.getImageurl());
             bundle.putString("title", selectcontent.getTitle());
             bundle.putString("writer", selectcontent.getWriter());
             bundle.putString("partner", selectcontent.getParter());
-            bundle.putString("publisher",selectcontent.getPublisher());
-            bundle.putString("bookshelf",selectcontent.getBookshelf());
-            bundle.putString("date",selectcontent.getDate());
-            bundle.putString("code",selectcontent.getCode());
-            bundle.putString("readstatus",selectcontent.getReadstatus());
-            bundle.putString("note",selectcontent.getNote());
-            bundle.putString("url",selectcontent.getUrl());
-            bundle.putString("tag",selectcontent.getTag());
+            bundle.putString("publisher", selectcontent.getPublisher());
+            bundle.putString("bookshelf", selectcontent.getBookshelf());
+            bundle.putString("date", selectcontent.getDate());
+            bundle.putString("code", selectcontent.getCode());
+            bundle.putString("readstatus", selectcontent.getReadstatus());
+            bundle.putString("note", selectcontent.getNote());
+            bundle.putString("url", selectcontent.getUrl());
+            bundle.putString("tag", selectcontent.getTag());
             intent.putExtras(bundle);
             startActivityForResult(intent, 1);
-            Log.d("Main","click");
+            Log.d("Main", "click");
         }
     }
 
@@ -420,7 +492,7 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == RESULT_OK) {
                     Bundle bundle;
                     bundle = data.getExtras();
-                    Book changeitem=books.get(chooseitem);
+                    Book changeitem = books.get(chooseitem);
                     changeitem.setTitle(bundle.getString("title"));
                     changeitem.setWriter(bundle.getString("writer"));
                     changeitem.setParter(bundle.getString("partner"));
@@ -432,38 +504,9 @@ public class MainActivity extends AppCompatActivity
                     changeitem.setTag(bundle.getString("tag"));
                     changeitem.setNote(bundle.getString("note"));
                     changeitem.setUrl(bundle.getString("url"));
-                    books.set(chooseitem,changeitem);
+                    books.set(chooseitem, changeitem);
                     adapter.notifyDataSetChanged();
-                    operator.save(getBaseContext(),books);
-                    break;
-                }
-            case 10:
-                if (resultCode==RESULT_OK) {
-                    if (data != null) {
-                        final String isbn_return = data.getStringExtra(Constant.CODED_CONTENT);
-                        Toast.makeText(MainActivity.this, "扫描失败", Toast.LENGTH_SHORT).show();
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    String json_return = Singleadd.getResult(isbn_return);
-                                    Book book = parseJson(MainActivity.this, json_return, isbn_return);
-                                    books.add(book);
-                                   operator.save(MainActivity.this,books);
-                                   books=operator.load(MainActivity.this);
-
-                                } catch (NoSuchAlgorithmException e) {
-                                    e.printStackTrace();
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
-                                } catch (InvalidKeyException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }).start();
-                    }
-                    adapter.notifyDataSetChanged();
+                    operator.save(getBaseContext(), books);
                     break;
                 }
         }
