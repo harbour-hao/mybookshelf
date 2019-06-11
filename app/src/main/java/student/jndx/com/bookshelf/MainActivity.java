@@ -5,6 +5,40 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.common.Constant;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+import static student.jndx.com.bookshelf.Singleadd.parseJson;
+
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
@@ -30,11 +64,14 @@ import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    static int REQUEST_CODE_SCAN=10;
+    CharSequence[] items={"扫描条形码","手动输入isbn码"};
     private SearchView mSearchView;
     private AutoCompleteTextView mAutoCompleteTextView;//搜索输入框
     private ListAdapter adapter;//存储Book数据的数组的适配器
     private ArrayList<Book> books;
     private ListView listView;
+    //private ImageView imageView;
     private ArrayList<Book> allbooks;
     private ListOperator operator=new ListOperator();
     private int chooseitem=0;//选中第几个item
@@ -48,8 +85,77 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                AlertDialog.Builder dialog=new AlertDialog.Builder(MainActivity.this);
+                dialog.setTitle("选择获取ISBN方式");
+                dialog.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                //扫描isbn
+                                Intent intent0=new Intent(MainActivity.this, CaptureActivity.class);
+                                startActivityForResult(intent0,REQUEST_CODE_SCAN);
+                                break;
+                            case 1:
+                                //手动输入isbn
+                                final EditText text_ISBN=new EditText(MainActivity.this);
+                                text_ISBN.setHint("13位isbn码...");
+                                final AlertDialog.Builder dialog_inputISBN=new AlertDialog.Builder(MainActivity.this);
+                                dialog_inputISBN.setTitle("请输入ISBN码：");
+                                dialog_inputISBN.setView(text_ISBN);
+                                dialog_inputISBN.setCancelable(false);
+                                dialog_inputISBN.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        final String txt_isbn=text_ISBN.getText().toString().trim();
+                                        //正则匹配，判断是否为13位数字的isbn码
+                                        boolean isISBN= Pattern.matches("\\d{13}",txt_isbn);
+                                        if(isISBN){
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    String json_return=null;
+                                                    try {
+                                                        //根据isbn码返回json数据
+                                                        json_return=Singleadd.getResult(txt_isbn);
+
+                                                        //解析json数据，得到Book对象
+                                                        Book book=Singleadd.parseJson(MainActivity.this,json_return,txt_isbn);
+                                                        books.add(book);
+                                                        //adapter.notifyDataSetChanged();
+                                                        operator.save(MainActivity.this,books);
+                                                        books=operator.load(MainActivity.this);
+
+                                                    } catch (NoSuchAlgorithmException e) {
+                                                        e.printStackTrace();
+                                                    } catch (UnsupportedEncodingException e) {
+                                                        e.printStackTrace();
+                                                    } catch (InvalidKeyException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    Log.d("hhh", json_return);
+                                                }
+                                            }
+                                            ).start();
+
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                        else{
+                                            Toast.makeText(MainActivity.this,"请输入正确的isbn码",Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                                dialog_inputISBN.show();
+
+
+                                break;}
+                    }
+
+                });
+                dialog.show();
+                // fab.close(true);
+
+
             }
         });
 
@@ -75,6 +181,8 @@ public class MainActivity extends AppCompatActivity
         //listview的点击事件
         listView.setOnItemClickListener(new mItemClick());
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -107,47 +215,47 @@ public class MainActivity extends AppCompatActivity
             final String []SortWay={"标题","作者","出版社","出版时间"};
             AlertDialog.Builder sortdialog=new AlertDialog.Builder(MainActivity.this).setTitle("选择排序方式");
             sortdialog.setSingleChoiceItems(SortWay, 1, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Log.d("Main",SortWay[which]);
-                            dialog.dismiss();
-                            switch (SortWay[which]){
-                                case "标题":
-                                    Collections.sort(books, new Comparator<Book>() {
-                                        @Override
-                                        public int compare(Book b1, Book b2) {
-                                            return b1.getTitle().compareTo(b2.getTitle());
-                                        }
-                                    });
-                                    break;
-                                case "作者":
-                                    Collections.sort(books, new Comparator<Book>() {
-                                        @Override
-                                        public int compare(Book b1, Book b2) {
-                                            return b1.getWriter().compareTo(b2.getWriter());
-                                        }
-                                    });
-                                    break;
-                                case "出版社":
-                                    Collections.sort(books, new Comparator<Book>() {
-                                        @Override
-                                        public int compare(Book b1, Book b2) {
-                                            return b1.getPublisher().compareTo(b2.getPublisher());
-                                        }
-                                    });
-                                    break;
-                                case "出版时间":
-                                    Collections.sort(books, new Comparator<Book>() {
-                                        @Override
-                                        public int compare(Book b1, Book b2) {
-                                            return b1.getDate().compareTo(b2.getDate());
-                                        }
-                                    });
-                                    break;
-                            }
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.d("Main",SortWay[which]);
+                    dialog.dismiss();
+                    switch (SortWay[which]){
+                        case "标题":
+                            Collections.sort(books, new Comparator<Book>() {
+                                @Override
+                                public int compare(Book b1, Book b2) {
+                                    return b1.getTitle().compareTo(b2.getTitle());
+                                }
+                            });
+                            break;
+                        case "作者":
+                            Collections.sort(books, new Comparator<Book>() {
+                                @Override
+                                public int compare(Book b1, Book b2) {
+                                    return b1.getWriter().compareTo(b2.getWriter());
+                                }
+                            });
+                            break;
+                        case "出版社":
+                            Collections.sort(books, new Comparator<Book>() {
+                                @Override
+                                public int compare(Book b1, Book b2) {
+                                    return b1.getPublisher().compareTo(b2.getPublisher());
+                                }
+                            });
+                            break;
+                        case "出版时间":
+                            Collections.sort(books, new Comparator<Book>() {
+                                @Override
+                                public int compare(Book b1, Book b2) {
+                                    return b1.getDate().compareTo(b2.getDate());
+                                }
+                            });
+                            break;
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            });
             sortdialog.setCancelable(false);
             sortdialog.show();
             return true;
@@ -171,9 +279,13 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_book) {
 
         } else if (id == R.id.nav_setting) {
-
+            Intent intent=new Intent();
+            intent.setClass(MainActivity.this,Setting_combine.class);
+            startActivity(intent);
         } else if (id == R.id.nav_about) {
-
+            Intent intent=new Intent();
+            intent.setClass(MainActivity.this,Guanyu_activity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -189,14 +301,15 @@ public class MainActivity extends AppCompatActivity
 
     private void initData(){
         this.books=operator.load(getBaseContext());
-        //样例数据初始化
-        if(books==null){
+        if(books==null){//样例数据
+            //imageView=findViewById(R.id.list_book_image);
             this.books=new ArrayList<Book>();
             Book book=new Book();
             book.setTitle("深入了解jvm");
             book.setDate("2011-01");
             book.setWriter("周志明");
             book.setPublisher("中华出版社");
+           // imageView.setImageResource(R.mipmap.book_img_default);
             this.books.add(book);
             book=new Book();
             book.setTitle("Effective Java");
@@ -282,7 +395,7 @@ public class MainActivity extends AppCompatActivity
             Book selectcontent = books.get(i);//获取选中的数据
             Intent intent = new Intent(MainActivity.this, Book_detail.class);
             Bundle bundle = new Bundle();
-            bundle.putInt("img", selectcontent.getImageurl());
+            bundle.putString("img", selectcontent.getUuid());
             bundle.putString("title", selectcontent.getTitle());
             bundle.putString("writer", selectcontent.getWriter());
             bundle.putString("partner", selectcontent.getParter());
@@ -299,6 +412,7 @@ public class MainActivity extends AppCompatActivity
             Log.d("Main","click");
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -321,6 +435,35 @@ public class MainActivity extends AppCompatActivity
                     books.set(chooseitem,changeitem);
                     adapter.notifyDataSetChanged();
                     operator.save(getBaseContext(),books);
+                    break;
+                }
+            case 10:
+                if (resultCode==RESULT_OK) {
+                    if (data != null) {
+                        final String isbn_return = data.getStringExtra(Constant.CODED_CONTENT);
+                        Toast.makeText(MainActivity.this, "扫描失败", Toast.LENGTH_SHORT).show();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    String json_return = Singleadd.getResult(isbn_return);
+                                    Book book = parseJson(MainActivity.this, json_return, isbn_return);
+                                    books.add(book);
+                                   operator.save(MainActivity.this,books);
+                                   books=operator.load(MainActivity.this);
+
+                                } catch (NoSuchAlgorithmException e) {
+                                    e.printStackTrace();
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                } catch (InvalidKeyException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }).start();
+                    }
+                    adapter.notifyDataSetChanged();
                     break;
                 }
         }

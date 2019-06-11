@@ -2,6 +2,7 @@ package student.jndx.com.bookshelf;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -104,7 +105,7 @@ public class EditBook extends AppCompatActivity {
     private void BookSave(){
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
-                bundle.putInt("img",nowbunble.getInt("img"));
+                bundle.putString("img",nowbunble.getString("img"));
                 bundle.putString("title", titleEditText.getText().toString());
                 bundle.putString("writer", authorEditText.getText().toString());
                 bundle.putString("partner", translatorEditText.getText().toString());
@@ -137,7 +138,9 @@ public class EditBook extends AppCompatActivity {
         detailBarTextView = (TextView) findViewById(R.id.book_edit_detail_bar_text_view);
         detailBarTextView.setText("详情");
         coverImageView = (ImageView) findViewById(R.id.book_cover_image_view);
-        coverImageView.setImageResource(bundle.getInt("img"));
+        Bitmap bitmap=Parsebook.ImageManager.GetLocalBitmap(EditBook.this,bundle.getString("img"));
+        if(bitmap!=null)
+        coverImageView.setImageBitmap(bitmap);
         readingStatusSpinner = (EditText) findViewById(R.id.reading_status_spinner);
         readingStatusSpinner.setText(bundle.getString("readstatus"));
         bookshelfSpinner = (EditText) findViewById(R.id.book_shelf_spinner);

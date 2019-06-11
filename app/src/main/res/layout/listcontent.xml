@@ -5,7 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="72dp"
     android:padding="6dp">
-
+    android:descendantFocusability="blocksDescendants"
+    <CheckBox
+        android:id="@+id/listview_select_cb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"/>
     <ImageView
         android:id="@+id/list_book_image"
         android:layout_width="45dp"
